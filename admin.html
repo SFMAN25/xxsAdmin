@@ -15,22 +15,23 @@
         .btn-ok { background: #00ff66; color: #000; }
         .btn-no { background: #ff0055; color: #fff; }
         input { padding: 10px; background: #000; color: #fff; border: 1px solid #00f3ff; border-radius: 5px; }
+        .date-badge { font-size: 11px; background: rgba(255,255,255,0.1); padding: 3px 6px; border-radius: 4px; display: block; margin-top: 5px; }
     </style>
 </head>
 <body>
 
-    <h1 style="text-align:center; color:#00f3ff;">🖥️ لوحة الإدارة المالية المباشرة</h1>
+    <h1 style="text-align:center; color:#00f3ff;">🖥️ لوحة الإدارة (Live)</h1>
 
     <div class="section">
-        <h3>⚡ الطلبات المالية المعلقة</h3>
+        <h3>⚡ الطلبات المعلقة</h3>
         <table>
             <thead>
                 <tr>
-                    <th>اللاعب</th>
-                    <th>النوع</th>
-                    <th>التفاصيل (الرقم)</th>
+                    <th>اللاعب / الوقت</th>
+                    <th>النوع / المحفظة</th>
+                    <th>التفاصيل (رقم الكاش)</th>
                     <th>المبلغ</th>
-                    <th>القرار (موافقة/رفض)</th>
+                    <th>القرار</th>
                 </tr>
             </thead>
             <tbody id="req-list">
@@ -42,7 +43,7 @@
     <div class="section">
         <h3 style="color:#39ff14;">💰 إضافة/خصم رصيد يدوي لأي لاعب</h3>
         <input type="email" id="direct-email" placeholder="إيميل اللاعب">
-        <input type="number" id="direct-amt" placeholder="المبلغ (+ للإضافة، - للخصم)">
+        <input type="number" id="direct-amt" placeholder="المبلغ (+ إضافة، - خصم)">
         <button class="btn-ok" onclick="manualDeposit()">تأكيد العملية</button>
     </div>
 
@@ -62,24 +63,25 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // مراقبة الطلبات المعلقة
     onSnapshot(query(collection(db, "requests"), where("status", "==", "pending")), snap => {
         const tbody = document.getElementById("req-list");
         tbody.innerHTML = snap.empty ? `<tr><td colspan="5">لا توجد طلبات معلقة...</td></tr>` : "";
         
         snap.forEach(d => {
             const req = d.data();
+            const dateObj = req.date ? new Date(req.date).toLocaleString('ar-EG') : 'وقت غير معروف';
             const typeStr = req.type === 'deposit' ? '🟩 إيداع' : '🟧 سحب';
-            const details = req.type === 'deposit' ? `من: ${req.senderNumber}` : `إلى: ${req.targetNumber}`;
+            const walletStr = req.wallet ? `(${req.wallet})` : '';
+            const details = req.type === 'deposit' ? `تحويل من: ${req.senderNumber}` : `تحويل إلى: ${req.targetNumber}`;
             
             tbody.innerHTML += `<tr>
-                <td>${req.email}</td>
-                <td>${typeStr}</td>
+                <td>${req.email}<span class="date-badge">${dateObj}</span></td>
+                <td>${typeStr}<br><span style="font-size:12px; color:#aaa;">${walletStr}</span></td>
                 <td>${details}</td>
                 <td style="font-weight:bold; color:#00f3ff;">${req.amount} ج.م</td>
                 <td>
-                    <button class="btn-ok" onclick="handleReq('${d.id}', '${req.uid}', '${req.type}', ${req.amount}, 'approve')">✅ تم (إضافة الرصيد)</button>
-                    <button class="btn-no" onclick="handleReq('${d.id}', '${req.uid}', '${req.type}', ${req.amount}, 'reject')">❌ رفض</button>
+                    <button class="btn-ok" onclick="handleReq('${d.id}', '${req.uid}', '${req.type}', ${req.amount}, 'approve')">✅ تأكيد</button>
+                    <button class="btn-no" onclick="handleReq('${d.id}', '${req.uid}', '${req.type}', ${req.amount}, 'reject')">❌ رجوع/رفض</button>
                 </td>
             </tr>`;
         });
@@ -89,19 +91,18 @@
         try {
             if(action === 'approve') {
                 await updateDoc(doc(db, "requests", reqId), { status: "approved" });
-                // لو إيداع، الرصيد هيزيد. لو سحب، هو أصلًا مخصوم لما اللاعب طلب.
                 if(type === 'deposit') { await updateDoc(doc(db, "users", uid), { balance: increment(amt) }); }
-                alert("تم الموافقة وتحديث الرصيد.");
+                alert("تم الموافقة وتحديث الرصيد بنجاح.");
             } else {
                 await updateDoc(doc(db, "requests", reqId), { status: "rejected" });
-                // لو سحب ورفضناه، نرجع الفلوس لمحفظته
                 if(type === 'withdraw') { await updateDoc(doc(db, "users", uid), { balance: increment(amt) }); }
-                alert("تم رفض الطلب.");
+                alert("تم الرفض بنجاح (وإرجاع الفلوس لو كانت سحب).");
             }
         } catch(e) { alert("خطأ: " + e.message); }
     }
 
     window.manualDeposit = async function() {
+        // حلينا مشكلة إن اللاعب مش بيظهر (بنوحد حالة الحروف)
         const email = document.getElementById("direct-email").value.trim().toLowerCase();
         const amt = parseInt(document.getElementById("direct-amt").value);
         if(!email || !amt) { alert("أدخل الإيميل والمبلغ!"); return; }
@@ -109,7 +110,7 @@
         try {
             const q = query(collection(db, "users"), where("email", "==", email));
             const snap = await getDocs(q);
-            if(snap.empty) { alert("اللاعب غير موجود."); return; }
+            if(snap.empty) { alert("اللاعب غير موجود! تأكد إن الإيميل صح."); return; }
             
             snap.forEach(async (d) => {
                 await updateDoc(doc(db, "users", d.id), { balance: increment(amt) });
@@ -117,7 +118,7 @@
                 document.getElementById("direct-email").value = "";
                 document.getElementById("direct-amt").value = "";
             });
-        } catch(e) { alert("خطأ: " + e.message); }
+        } catch(e) { alert("خطأ: تأكد من إن قواعد الداتابيز Rule مفتوحة"); }
     }
 </script>
 </body>

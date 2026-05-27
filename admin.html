@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XXSB ADMIN PANEL</title>
+    <style>
+        body { background: #0b0c10; color: #fff; font-family: monospace; padding: 20px; }
+        .section { background: #1f2833; border: 1px solid #00f3ff; border-radius: 10px; padding: 20px; margin-bottom: 25px; }
+        h3 { color: #00f3ff; margin-top: 0; border-bottom: 1px solid rgba(0,243,255,0.2); padding-bottom: 10px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; background: rgba(0,0,0,0.5); }
+        th, td { padding: 12px; border: 1px solid rgba(0,243,255,0.2); text-align: center; }
+        th { background: rgba(0,243,255,0.1); color: #00f3ff; }
+        button { padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin: 2px; }
+        .btn-ok { background: #00ff66; color: #000; }
+        .btn-no { background: #ff0055; color: #fff; }
+        input { padding: 10px; background: #000; color: #fff; border: 1px solid #00f3ff; border-radius: 5px; }
+    </style>
+</head>
+<body>
+
+    <h1 style="text-align:center; color:#00f3ff;">🖥️ لوحة الإدارة المالية المباشرة</h1>
+
+    <div class="section">
+        <h3>⚡ الطلبات المالية المعلقة</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>اللاعب</th>
+                    <th>النوع</th>
+                    <th>التفاصيل (الرقم)</th>
+                    <th>المبلغ</th>
+                    <th>القرار (موافقة/رفض)</th>
+                </tr>
+            </thead>
+            <tbody id="req-list">
+                <tr><td colspan="5">لا توجد طلبات معلقة...</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="section">
+        <h3 style="color:#39ff14;">💰 إضافة/خصم رصيد يدوي لأي لاعب</h3>
+        <input type="email" id="direct-email" placeholder="إيميل اللاعب">
+        <input type="number" id="direct-amt" placeholder="المبلغ (+ للإضافة، - للخصم)">
+        <button class="btn-ok" onclick="manualDeposit()">تأكيد العملية</button>
+    </div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, onSnapshot, query, where, doc, updateDoc, increment, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCyiLPBJ0qDVZhAtW5r0psuvz8iyIy8VLI",
+        authDomain: "xxsb-6bd79.firebaseapp.com",
+        projectId: "xxsb-6bd79",
+        storageBucket: "xxsb-6bd79.firebasestorage.app",
+        messagingSenderId: "6915419205",
+        appId: "1:6915419205:web:915ec9496f35a3bfb9472c"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // مراقبة الطلبات المعلقة
+    onSnapshot(query(collection(db, "requests"), where("status", "==", "pending")), snap => {
+        const tbody = document.getElementById("req-list");
+        tbody.innerHTML = snap.empty ? `<tr><td colspan="5">لا توجد طلبات معلقة...</td></tr>` : "";
+        
+        snap.forEach(d => {
+            const req = d.data();
+            const typeStr = req.type === 'deposit' ? '🟩 إيداع' : '🟧 سحب';
+            const details = req.type === 'deposit' ? `من: ${req.senderNumber}` : `إلى: ${req.targetNumber}`;
+            
+            tbody.innerHTML += `<tr>
+                <td>${req.email}</td>
+                <td>${typeStr}</td>
+                <td>${details}</td>
+                <td style="font-weight:bold; color:#00f3ff;">${req.amount} ج.م</td>
+                <td>
+                    <button class="btn-ok" onclick="handleReq('${d.id}', '${req.uid}', '${req.type}', ${req.amount}, 'approve')">✅ تم (إضافة الرصيد)</button>
+                    <button class="btn-no" onclick="handleReq('${d.id}', '${req.uid}', '${req.type}', ${req.amount}, 'reject')">❌ رفض</button>
+                </td>
+            </tr>`;
+        });
+    });
+
+    window.handleReq = async function(reqId, uid, type, amt, action) {
+        try {
+            if(action === 'approve') {
+                await updateDoc(doc(db, "requests", reqId), { status: "approved" });
+                // لو إيداع، الرصيد هيزيد. لو سحب، هو أصلًا مخصوم لما اللاعب طلب.
+                if(type === 'deposit') { await updateDoc(doc(db, "users", uid), { balance: increment(amt) }); }
+                alert("تم الموافقة وتحديث الرصيد.");
+            } else {
+                await updateDoc(doc(db, "requests", reqId), { status: "rejected" });
+                // لو سحب ورفضناه، نرجع الفلوس لمحفظته
+                if(type === 'withdraw') { await updateDoc(doc(db, "users", uid), { balance: increment(amt) }); }
+                alert("تم رفض الطلب.");
+            }
+        } catch(e) { alert("خطأ: " + e.message); }
+    }
+
+    window.manualDeposit = async function() {
+        const email = document.getElementById("direct-email").value.trim().toLowerCase();
+        const amt = parseInt(document.getElementById("direct-amt").value);
+        if(!email || !amt) { alert("أدخل الإيميل والمبلغ!"); return; }
+
+        try {
+            const q = query(collection(db, "users"), where("email", "==", email));
+            const snap = await getDocs(q);
+            if(snap.empty) { alert("اللاعب غير موجود."); return; }
+            
+            snap.forEach(async (d) => {
+                await updateDoc(doc(db, "users", d.id), { balance: increment(amt) });
+                alert(`تم تعديل الرصيد بنجاح للاعب: ${email}`);
+                document.getElementById("direct-email").value = "";
+                document.getElementById("direct-amt").value = "";
+            });
+        } catch(e) { alert("خطأ: " + e.message); }
+    }
+</script>
+</body>
+</html>

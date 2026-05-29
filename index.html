@@ -3,214 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>XXSB | CONTROL PANEL 10/10</title>
+    <title>XXSB | لوحة التحكم الشاملة لايف</title>
     <style>
-        body { background: #070a14; color: #fff; font-family: 'Segoe UI', sans-serif; padding: 30px; }
-        h1 { text-align: center; color: #00f3ff; text-shadow: 0 0 15px rgba(0,243,255,0.4); margin-bottom: 40px; }
-        .grid-layout { display: grid; grid-template-columns: 1fr; gap: 30px; }
-        .card { background: #111625; border: 1px solid rgba(0, 243, 255, 0.15); border-radius: 15px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        h3 { color: #00f3ff; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px; margin-top: 0; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th, td { padding: 12px 15px; border-bottom: 1px solid rgba(255,255,255,0.05); text-align: center; }
-        th { background: rgba(0, 243, 255, 0.05); color: #00f3ff; font-weight: bold; }
-        tr:hover { background: rgba(255,255,255,0.02); }
-        button { padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; margin: 2px; }
-        .btn-approve { background: #00ff66; color: #000; }
-        .btn-reject { background: #ff0055; color: #fff; }
-        .btn-action { background: #00f3ff; color: #000; width: 100%; padding: 12px; margin-top: 10px; border-radius: 8px; }
-        input { width: 100%; padding: 12px; background: #090d16; color: #fff; border: 1px solid rgba(0,243,255,0.2); border-radius: 8px; margin-bottom: 10px; text-align: center; }
-        .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; }
-        .status-approved { background: rgba(0,255,102,0.15); color: #00ff66; }
-        .status-rejected { background: rgba(255,0,85,0.15); color: #ff0055; }
-        .date-text { font-size: 11px; color: #6c7a89; display: block; }
+        body { background-color: #060913; color: #e2e8f0; font-family: 'Segoe UI', sans-serif; padding: 20px; }
+        .panel { max-width: 1100px; margin: 0 auto; background: #0f172a; padding: 20px; border-radius: 12px; border: 1px solid #1e293b; }
+        h2 { text-align: center; color: #00ffcc; text-shadow: 0 0 10px rgba(0,255,204,0.3); }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 14px; text-align: center; }
+        th, td { padding: 12px; border: 1px solid #1e293b; }
+        th { background: #1e293b; color: #00ffcc; }
+        tr:nth-child(even) { background: #131d31; }
+        .control-box { background: #131a26; padding: 20px; border-radius: 10px; margin-top: 30px; border: 1px solid #ffcc00; display: flex; flex-wrap: wrap; justify-content: space-around; align-items: center; }
+        input { padding: 10px; background: #060913; border: 1px solid #1e293b; color: #fff; border-radius: 6px; text-align: center; margin: 5px; width: 220px; }
+        .btn-action { padding: 10px 25px; background: #ffcc00; color: #000; font-weight: bold; border: none; border-radius: 6px; cursor: pointer; }
+        .btn-action:hover { background: #cca300; }
+        .badge { padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; background: #1e293b; color: #00ffcc; }
     </style>
 </head>
 <body>
 
-    <h1>🖥️ لوحة الإدارة والتحكم الشاملة لايف</h1>
+    <div class="panel">
+        <h2>📊 لوحة تحكم وإدارة منصة XXSB اللايف</h2>
+        <hr style="border-color: #1e293b;">
 
-    <div class="grid-layout">
-        
-        <div class="card">
-            <h3>👥 اسمي الحسابات المتسجلة في المنصة ورصيدهم</h3>
-            <div style="max-height: 300px; overflow-y: auto;">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>البريد الإلكتروني للإيداع واللعب</th>
-                            <th>الرصيد الحالي</th>
-                        </tr>
-                    </thead>
-                    <tbody id="users-list">
-                        <tr><td colspan="2">جاري جلب الحسابات المسجلة...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <div class="card">
-            <h3>⚡ أوامر الدفع المعلقة (بانتظار التأكيد)</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>اللاعب / وقت الطلب</th>
-                        <th>النوع / الوسيلة</th>
-                        <th>بيانات ورقم التحويل</th>
-                        <th>المبلغ المطلوب</th>
-                        <th>اتخاذ قرار رسمي</th>
-                    </tr>
-                </thead>
-                <tbody id="pending-list">
-                    <tr><td colspan="5">لا توجد أي أوامر دفع معلقة حالياً...</td></tr>
+        <h3>👥 الحسابات المسجلة وبيانات الأجهزة والشبكات:</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>البريد الإلكتروني</th>
+                    <th>الرصيد الحالي</th>
+                    <th>كود الإحالة الخاص</th>
+                    <th>عنوان الـ IP</th>
+                    <th>مزود الشبكة</th>
+                    <th>نوع جهاز اللاعب</th>
+                </tr>
+            </thead>
+            <tbody id="users-table-body">
                 </tbody>
-            </table>
-        </div>
+        </table>
 
-        <div class="card">
-            <h3>📜 سجل وأرشيف العمليات السابقة</h3>
-            <div style="max-height: 300px; overflow-y: auto;">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>اللاعب / التاريخ</th>
-                            <th>النوع</th>
-                            <th>المبلغ</th>
-                            <th>حالة الطلب</th>
-                        </tr>
-                    </thead>
-                    <tbody id="history-list">
-                        <tr><td colspan="4">السجل فارغ...</td></tr>
-                    </tbody>
-                </table>
-            </div>
+        <div class="control-box">
+            <h3 style="width: 100%; margin-top: 0; color: #ffcc00; text-align: center;">💰 التحكم المالي السريع (إرسال / سحب رصيد يدوي)</h3>
+            <input type="email" id="target-email" placeholder="اكتب إيميل اللاعب بدقة">
+            <input type="number" id="target-amount" placeholder="المبلغ (مثال: 500 أو -500 للخصم)">
+            <button class="btn-action" id="btn-update-balance">تنفيذ الأمر المالي فوراً</button>
         </div>
-
-        <div class="card">
-            <h3 style="color:#00ff66;">💰 التحكم المالي السريع (إرسال/خصم فلوس)</h3>
-            <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 10px;">
-                <input type="email" id="manual-email" placeholder="اكتب إيميل اللاعب بدقة">
-                <input type="number" id="manual-amount" placeholder="المبلغ (مثال: 500 أو -500 للخصم)">
-                <button class="btn-approve" style="margin: 0; height: 44px;" onclick="executeManualTransaction()">تنفيذ الأمر المالي فوراً</button>
-            </div>
-        </div>
-
     </div>
 
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, collection, onSnapshot, query, where, doc, updateDoc, increment, getDocs, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { getFirestore, collection, onSnapshot, query, where, getDocs, updateDoc, doc, increment } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyCyiLPBJ0qDVZhAtW5r0psuvz8iyIy8VLI",
-        authDomain: "xxsb-6bd79.firebaseapp.com",
-        projectId: "xxsb-6bd79",
-        storageBucket: "xxsb-6bd79.firebasestorage.app",
-        messagingSenderId: "6915419205",
-        appId: "1:6915419205:web:915ec9496f35a3bfb9472c"
-    };
+        // الـ Config الخاص بمشروعك xxsb-6bd79
+        const firebaseConfig = {
+            apiKey: "ضع_هنا_الـ_API_KEY_الخاص_بك",
+            authDomain: "xxsb-6bd79.firebaseapp.com",
+            projectId: "xxsb-6bd79",
+            storageBucket: "xxsb-6bd79.appspot.com",
+            messagingSenderId: "ضع_هنا_الـ_SENDER_ID",
+            appId: "ضع_هنا_الـ_APP_ID"
+        };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
 
-    // 1️⃣ جلب وتحديث قائمة الحسابات المتسجلة تلقائياً
-    onSnapshot(collection(db, "users"), snap => {
-        const uList = document.getElementById("users-list");
-        uList.innerHTML = "";
-        if(snap.empty) { uList.innerHTML = "<tr><td colspan='2'>لا يوجد مستخدمين مسجلين بعد.</td></tr>"; return; }
-        
-        snap.forEach(d => {
-            const u = d.data();
-            uList.innerHTML += `<tr>
-                <td style="text-align:right; font-weight:bold; color:#fff;">✉️ ${u.email}</td>
-                <td style="color:#00ff66; font-weight:bold;">${u.balance || 0} ج.م</td>
-            </tr>`;
-        });
-    });
+        // تشغيل صوت التنبيه القصير عند تسجيل لاعب جديد بالمنصة
+        let initialLoad = true;
+        const alertSound = new Audio('https://actions.google.com/sounds/v1/notifications/beep_short.ogg');
 
-    // 2️⃣ جلب وتحديث أوامر الدفع المعلقة لايف
-    onSnapshot(query(collection(db, "requests"), where("status", "==", "pending")), snap => {
-        const pList = document.getElementById("pending-list");
-        pList.innerHTML = snap.empty ? `<tr><td colspan="5">لا توجد أي أوامر دفع معلقة حالياً...</td></tr>` : "";
-        
-        snap.forEach(d => {
-            const r = d.data();
-            const time = r.date ? new Date(r.date).toLocaleString('ar-EG') : 'غير محدد';
-            const typeText = r.type === 'deposit' ? '🟩 إيداع شحن' : '🟧 سحب رصيد';
-            const walletText = r.wallet ? `(${r.wallet})` : '';
-            const details = r.type === 'deposit' ? `رقم الراسل: ${r.senderNumber}` : `رقم المستلم: ${r.targetNumber}`;
-            
-            pList.innerHTML += `<tr>
-                <td><strong>${r.email}</strong><span class="date-text">${time}</span></td>
-                <td>${typeText} <br/> <small>${walletText}</small></td>
-                <td>${details}</td>
-                <td style="color:#00f3ff; font-weight:bold; font-size:16px;">${r.amount} ج.م</td>
-                <td>
-                    <button class="btn-approve" onclick="processOrder('${d.id}', '${r.uid}', '${r.type}', ${r.amount}, 'approve')">✅ قبول (تم)</button>
-                    <button class="btn-reject" onclick="processOrder('${d.id}', '${r.uid}', '${r.type}', ${r.amount}, 'reject')">❌ رفض / إرجاع</button>
-                </td>
-            </tr>`;
-        });
-    });
+        // جلب وعرض بيانات المستخدمين + الأجهزة والشبكات لايف وتحديثها تلقائياً
+        onSnapshot(collection(db, "users"), (snapshot) => {
+            const tableBody = document.getElementById('users-table-body');
+            tableBody.innerHTML = ""; // مسح القديم للتحديث
 
-    // 3️⃣ جلب السجل الكامل للعمليات السابقة (تم قبولها أو رفضها) لفرزها
-    onSnapshot(query(collection(db, "requests"), where("status", "!=", "pending")), snap => {
-        const hList = document.getElementById("history-list");
-        hList.innerHTML = snap.empty ? `<tr><td colspan="4">السجل فارغ حتى الآن.</td></tr>` : "";
-        
-        snap.forEach(d => {
-            const r = d.data();
-            const time = r.date ? new Date(r.date).toLocaleString('ar-EG') : 'غير معروف';
-            const badgeClass = r.status === 'approved' ? 'status-approved' : 'status-rejected';
-            const badgeText = r.status === 'approved' ? 'تمت الموافقة' : 'مرفوض';
-            const typeText = r.type === 'deposit' ? 'إيداع' : 'سحب';
-
-            hList.innerHTML += `<tr>
-                <td>${r.email}<span class="date-text">${time}</span></td>
-                <td>${typeText}</td>
-                <td>${r.amount} ج.م</td>
-                <td><span class="status-badge ${badgeClass}">${badgeText}</span></td>
-            </tr>`;
-        });
-    });
-
-    // معالجة الأوامر بالقبول أو الرفض وتحديث حساب اللاعب فوراً
-    window.processOrder = async function(reqId, uid, type, amt, action) {
-        try {
-            if(action === 'approve') {
-                await updateDoc(doc(db, "requests", reqId), { status: "approved" });
-                if(type === 'deposit') { 
-                    await updateDoc(doc(db, "users", uid), { balance: increment(amt) }); 
-                }
-                alert("✅ تم قبول العملية بنجاح وإضافة الرصيد.");
-            } else {
-                await updateDoc(doc(db, "requests", reqId), { status: "rejected" });
-                if(type === 'withdraw') { 
-                    await updateDoc(doc(db, "users", uid), { balance: increment(amt) }); 
-                }
-                alert("❌ تم رفض الطلب وإرجاع المال للمحفظة إن كان سحباً.");
+            // إطلاق التنبيه الصوتي لو مسجل جديد دخل واللوحة مفتوحة
+            if (!snapshot.empty && !initialLoad) {
+                alertSound.play().catch(e => console.log("الصوت يحتاج تفاعل مع الصفحة أولاً"));
             }
-        } catch(e) { alert("خطأ في معالجة الأمر: " + e.message); }
-    }
+            initialLoad = false;
 
-    // إرسال أو خصم رصيد يدوي لأي إيميل
-    window.executeManualTransaction = async function() {
-        const email = document.getElementById("manual-email").value.trim().toLowerCase();
-        const amt = parseInt(document.getElementById("manual-amount").value);
-        if(!email || !amt) { alert("من فضلك أدخل الإيميل والمبلغ بالكامل."); return; }
-
-        try {
-            const q = query(collection(db, "users"), where("email", "==", email));
-            const snap = await getDocs(q);
-            if(snap.empty) { alert("⚠️ هذا الحساب غير مسجل في الداتابيز بالمنصة!"); return; }
-            
-            snap.forEach(async (d) => {
-                await updateDoc(doc(db, "users", d.id), { balance: increment(amt) });
-                alert(`💰 تم تعديل الحساب يدويًا بنجاح بمقدار ${amt} ج.م للحساب: ${email}`);
-                document.getElementById("manual-email").value = "";
-                document.getElementById("manual-amount").value = "";
+            snapshot.forEach((userDoc) => {
+                const u = userDoc.data();
+                const row = document.createElement('tr');
+                
+                row.innerHTML = `
+                    <td><b>${u.email || 'غير متاح'}</b></td>
+                    <td style="color: #ffcc00; font-weight: bold;">${u.balance || 0} ج.م</td>
+                    <td><span class="badge">${u.referralCode || '-'}</span></td>
+                    <td style="color: #00ffcc;">${u.ipAddress || 'مخفي'}</td>
+                    <td>${u.networkProvider || 'فودافون/اتصالات/WE'}</td>
+                    <td>${u.deviceType || 'موبايل'}</td>
+                `;
+                tableBody.appendChild(row);
             });
-        } catch(e) { alert("خطأ: تعذر تحديث الرصيد يدوياً."); }
-    }
-</script>
+        });
+
+        // تفعيل زرار الإرسال والخصم المالي الفوري عن طريق الإيميل
+        document.getElementById('btn-update-balance').addEventListener('click', async () => {
+            const email = document.getElementById('target-email').value.trim();
+            const amount = parseInt(document.getElementById('target-amount').value);
+
+            if(!email || isNaN(amount)) return alert("يرجى إدخال إيميل اللاعب والمبلغ بشكل صحيح!");
+
+            try {
+                const q = query(collection(db, "users"), where("email", "==", email));
+                const querySnap = await getDocs(q);
+
+                if(querySnap.empty) {
+                    alert("اللاعب غير موجود بالداتابيز! تأكد من الإيميل.");
+                    return;
+                }
+
+                const userDocId = querySnap.docs[0].id;
+                // تعديل الرصيد بالزيادة أو النقصان باستخدام التحديث التراكمي
+                await updateDoc(doc(db, "users", userDocId), {
+                    balance: increment(amount)
+                });
+
+                alert(`تم تنفيذ العملية بنجاح وتعديل رصيد اللاعب بقيمة ${amount} ج.م!`);
+                document.getElementById('target-amount').value = "";
+            } catch (err) {
+                alert("حدث خطأ أثناء العملية: " + err.message);
+            }
+        });
+    </script>
 </body>
 </html>

@@ -5,97 +5,102 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>XXSB | CONTROL PANEL 10/10</title>
     <style>
-        body { background: #070a14; color: #fff; font-family: 'Segoe UI', sans-serif; padding: 30px; }
-        h1 { text-align: center; color: #00f3ff; text-shadow: 0 0 15px rgba(0,243,255,0.4); margin-bottom: 40px; }
-        .grid-layout { display: grid; grid-template-columns: 1fr; gap: 30px; }
-        .card { background: #111625; border: 1px solid rgba(0, 243, 255, 0.15); border-radius: 15px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        h3 { color: #00f3ff; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px; margin-top: 0; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th, td { padding: 12px 15px; border-bottom: 1px solid rgba(255,255,255,0.05); text-align: center; }
-        th { background: rgba(0, 243, 255, 0.05); color: #00f3ff; font-weight: bold; }
-        tr:hover { background: rgba(255,255,255,0.02); }
-        button { padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; margin: 2px; }
-        .btn-approve { background: #00ff66; color: #000; }
-        .btn-reject { background: #ff0055; color: #fff; }
-        .btn-action { background: #00f3ff; color: #000; width: 100%; padding: 12px; margin-top: 10px; border-radius: 8px; }
-        input { width: 100%; padding: 12px; background: #090d16; color: #fff; border: 1px solid rgba(0,243,255,0.2); border-radius: 8px; margin-bottom: 10px; text-align: center; }
-        .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; }
-        .status-approved { background: rgba(0,255,102,0.15); color: #00ff66; }
-        .status-rejected { background: rgba(255,0,85,0.15); color: #ff0055; }
-        .date-text { font-size: 11px; color: #6c7a89; display: block; }
-        .badge-info { background: rgba(255, 204, 0, 0.1); color: #ffcc00; padding: 2px 6px; border-radius: 4px; font-size: 11px; }
+        :root {
+            --bg-color: #070a14; --card-bg: #111625;
+            --neon-cyan: #00f3ff; --neon-green: #00ff66; --neon-pink: #ff0055; --neon-gold: #ffaa00;
+        }
+        body { background: var(--bg-color); color: #fff; font-family: 'Segoe UI', sans-serif; padding: 30px; margin: 0; }
+        h1 { text-align: center; color: var(--neon-cyan); text-shadow: 0 0 15px rgba(0,243,255,0.4); margin-bottom: 40px; font-weight: 800; }
+        
+        .grid-layout { display: grid; grid-template-columns: 1fr; gap: 30px; max-width: 1200px; margin: 0 auto; }
+        @media (min-width: 768px) { .grid-layout { grid-template-columns: 1fr 1fr; } .full-width { grid-column: span 2; } }
+        
+        .card { background: var(--card-bg); border: 1px solid rgba(0, 243, 255, 0.15); border-radius: 15px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        h3 { color: var(--neon-cyan); border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px; margin-top: 0; font-size: 18px; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; }
+        th, td { padding: 12px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        th { background: rgba(0, 243, 255, 0.05); color: var(--neon-cyan); font-weight: bold; }
+        
+        input, select { width: 100%; padding: 12px; background: #070a14; border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 8px; margin-bottom: 15px; box-sizing: border-box; font-weight: 600; text-align: center; }
+        input:focus { border-color: var(--neon-cyan); outline: none; }
+        
+        .btn { width: 100%; padding: 12px; background: linear-gradient(135deg, var(--neon-cyan), #00a8ff); color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px; }
+        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn-danger { background: linear-gradient(135deg, var(--neon-pink), #b3003b); color: #fff; }
+        .btn-success { background: linear-gradient(135deg, var(--neon-green), #00b347); color: #000; }
+        .btn-secondary { background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); }
+        
+        .action-btns { display: flex; gap: 8px; justify-content: center; }
+        .action-btns button { padding: 6px 12px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 11px; }
+        
+        .hidden { display: none !important; }
+        
+        /* تجميل تفاصيل البحث والإحصائيات */
+        .info-box { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.03); margin-top: 15px; }
+        .info-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.02); font-size: 13px; }
+        .info-row:last-child { border-bottom: none; }
+        .stats-panel { background: #0b0e17; border: 1px dashed rgba(0,255,102,0.2); padding: 12px; border-radius: 8px; margin-top: 12px; }
     </style>
 </head>
 <body>
 
-    <h1>🖥️ لوحة الإدارة والتحكم الشاملة لايف</h1>
+    <h1>XXSB | CONTROL PANEL 10/10</h1>
 
     <div class="grid-layout">
         
-        <div class="card">
-            <h3>👥 الحسابات المسجلة في المنصة وتتبع الأجهزة والشبكات</h3>
-            <div style="max-height: 350px; overflow-y: auto;">
+        <div class="card full-width">
+            <h3>📥 المعاملات والطلبات المالية المعلقة (إيداعات / سحوبات)</h3>
+            <div style="overflow-x: auto;">
                 <table>
                     <thead>
                         <tr>
-                            <th>البريد الإلكتروني للعب</th>
-                            <th>الرصيد المتوفر</th>
-                            <th>كود الإحالة</th>
-                            <th>عنوان الـ IP</th>
-                            <th>مزود الشبكة المتصل</th>
-                            <th>نوع جهاز اللاعب</th>
+                            <th>اللاعب</th>
+                            <th>النوع</th>
+                            <th>المبلغ</th>
+                            <th>البيانات المرفقة / رقم المحفظة</th>
+                            <th>الإجراء الإداري السريع</th>
                         </tr>
                     </thead>
-                    <tbody id="users-list">
-                        <tr><td colspan="6">جاري جلب الحسابات والشبكات المسجلة لايف...</td></tr>
+                    <tbody id="requests-table">
+                        <tr>
+                            <td colspan="5" style="color: rgba(255,255,255,0.4)">جاري الاتصال بالخادم وتحميل الطلبات...</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
         </div>
 
         <div class="card">
-            <h3>⚡ أوامر الدفع المعلقة (بانتظار التأكيد)</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>اللاعب / وقت الطلب</th>
-                        <th>النوع / الوسيلة</th>
-                        <th>بيانات ورقم التحويل</th>
-                        <th>المبلغ المطلوب</th>
-                        <th>اتخاذ قرار رسمي</th>
-                    </tr>
-                </thead>
-                <tbody id="pending-list">
-                    <tr><td colspan="5">لا توجد أي أوامر دفع معلقة حالياً...</td></tr>
-                </tbody>
-            </table>
+            <h3>💰 تعديل وشحن رصيد لاعب يدوياً</h3>
+            <input type="email" id="manual-email" placeholder="بريد اللاعب الإلكتروني بدقة">
+            <input type="number" id="manual-amount" placeholder="المبلغ (بالموجب للشحن / بالسالب للخصم)">
+            <button class="btn" onclick="executeManualTransaction()">تنفيذ تعديل الرصيد الفوري</button>
         </div>
 
         <div class="card">
-            <h3>📜 سجل وأرشيف العمليات السابقة (المقبولة والمرفوضة)</h3>
-            <div style="max-height: 300px; overflow-y: auto;">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>اللاعب / التاريخ</th>
-                            <th>النوع والوسيلة</th>
-                            <th>المبلغ المعالج</th>
-                            <th>حالة القرار النهائى</th>
-                        </tr>
-                    </thead>
-                    <tbody id="history-list">
-                        <tr><td colspan="4">السجل فارغ...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+            <h3>🛠️ فحص الحساب الذكي والتحكم بالإنترنت والإحصائيات</h3>
+            <input type="email" id="search-email" placeholder="أدخل بريد اللاعب المراد فحص إحصائياته والتحكم به">
+            <button class="btn btn-success" onclick="searchPlayerAccount()">🔍 فحص الحساب الفوري</button>
+            
+            <div id="search-results-box" class="info-box hidden">
+                <div class="info-row"><span>📧 البريد الإلكتروني:</span><b id="res-email" style="color:var(--neon-cyan)">-</b></div>
+                <div class="info-row"><span>💵 الرصيد الحالي للمحفظة:</span><b id="res-balance" style="color:var(--neon-green)">0 ج.م</b></div>
+                <div class="info-row"><span>🌐 حالة إنترنت الحساب بالمنصة:</span><b id="res-net-status">-</b></div>
+                
+                <div style="margin-top: 15px; display: flex; gap: 10px;">
+                    <button id="btn-toggle-net" class="btn btn-danger" style="flex:1;" onclick="togglePlayerInternet()">📴 فصل الإنترنت</button>
+                    <button class="btn btn-secondary" style="flex:1;" onclick="toggleStatsVisibility()">📊 اظهر احصائيات</button>
+                </div>
 
-        <div class="card">
-            <h3 style="color:#00ff66;">💰 التحكم المالي السريع (إرسال/خصم فلوس)</h3>
-            <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 10px;">
-                <input type="email" id="manual-email" placeholder="اكتب إيميل اللاعب بدقة">
-                <input type="number" id="manual-amount" placeholder="المبلغ (مثال: 500 أو -500 للخصم)">
-                <button class="btn-approve" style="margin: 0; height: 44px;" onclick="executeManualTransaction()">تنفيذ الأمر المالي فوراً</button>
+                <div id="stats-details-panel" class="stats-panel hidden">
+                    <h4 style="color:var(--neon-gold); font-size:13px; text-align:center; margin-bottom:8px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:4px;">📊 سجل أداء وتحديات اللاعب</h4>
+                    <div class="info-row"><span>🎮 إجمالي جولات X-O الملعوبة:</span><b id="stat-played" style="color:#fff">0 مرة</b></div>
+                    <div class="info-row"><span>🏆 مرات الفوز المحققة:</span><b id="stat-wins" style="color:var(--neon-green)">0 جولة</b></div>
+                    <div class="info-row"><span>❌ مرات الخسارة:</span><b id="stat-losses" style="color:var(--neon-pink)">0 جولة</b></div>
+                    <div class="info-row"><span>💰 إجمالي الأرباح المكتسبة:</span><b id="stat-total-won" style="color:var(--neon-cyan)">0 ج.م</b></div>
+                    <div class="info-row"><span>📉 إجمالي الخسائر المالية:</span><b id="stat-total-lost" style="color:var(--neon-pink)">0 ج.م</b></div>
+                </div>
             </div>
         </div>
 
@@ -103,7 +108,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, collection, onSnapshot, query, where, doc, updateDoc, increment, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, collection, onSnapshot, doc, updateDoc, increment, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyCyiLPBJ0qDVZhAtW5r0psuvz8iyIy8VLI",
@@ -117,98 +122,57 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // تفعيل صوت إشعار فوري عند وصول أي طلب مالي معلق جديد للوحة
-    let initialSkip = true;
-    const alertAudio = new Audio('https://actions.google.com/sounds/v1/notifications/beep_short.ogg');
+    // متغيرات عالمية لحفظ بيانات الحساب المفحوص حالياً
+    let currentSearchedDocId = null;
+    let currentSearchedNetStatus = true;
 
-    // 1️⃣ جلب وتحديث قائمة اللاعبين متضمنة بيانات الاتصال والأجهزة لايف
-    onSnapshot(collection(db, "users"), snap => {
-        const uList = document.getElementById("users-list");
-        uList.innerHTML = "";
-        if(snap.empty) { uList.innerHTML = "<tr><td colspan='6'>لا يوجد مستخدمين مسجلين بعد.</td></tr>"; return; }
-        
-        snap.forEach(d => {
-            const u = d.data();
-            uList.innerHTML += `<tr>
-                <td style="text-align:right; font-weight:bold; color:#fff;">✉️ ${u.email}</td>
-                <td style="color:#00ff66; font-weight:bold;">${u.balance || 0} ج.م</td>
-                <td><span class="badge-info">${u.referralCode || '-'}</span></td>
-                <td style="color:#00f3ff; font-family:monospace;">${u.ipAddress || 'غير متوفر'}</td>
-                <td style="font-size:12px; color:#8a99ad;">${u.networkProvider || 'محلي'}</td>
-                <td style="font-size:12px;">${u.deviceType || 'متصفح'}</td>
-            </tr>`;
+    // المراقبة الحية لجدول الطلبات المعلقة
+    onSnapshot(collection(db, "requests"), (snapshot) => {
+        const tableBody = document.getElementById("requests-table");
+        tableBody.innerHTML = "";
+        let count = 0;
+
+        snapshot.forEach((docSnap) => {
+            const req = docSnap.data();
+            if(req.status === "pending") {
+                count++;
+                let tr = document.createElement("tr");
+                let infoDetails = req.type === "deposit" 
+                    ? `المحفظة: ${req.wallet} <br> رقم المرسل: ${req.senderNumber}`
+                    : `رقم استلام الأموال: ${req.targetNumber}`;
+
+                tr.innerHTML = `
+                    <td style="font-weight:bold; color:var(--neon-cyan);">${req.email}</td>
+                    <td style="color:${req.type==='deposit'?'var(--neon-green)':'var(--neon-pink)'}; font-weight:bold;">${req.type==='deposit'?'إيداع 📥':'سحب 📤'}</td>
+                    <td style="font-weight:bold; color:var(--neon-gold);">${req.amount} ج.م</td>
+                    <td>${infoDetails}</td>
+                    <td class="action-btns">
+                        <button class="btn-success" onclick="processRequest('${docSnap.id}', '${req.type}', '${req.uid}', ${req.amount}, 'approved')">✅ قبول</button>
+                        <button class="btn-danger" onclick="processRequest('${docSnap.id}', '${req.type}', '${req.uid}', ${req.amount}, 'rejected')">❌ رفض</button>
+                    </td>
+                `;
+                tableBody.appendChild(tr);
+            }
         });
-    });
 
-    // 2️⃣ جلب وتحديث أوامر السحب والإيداع المعلقة لايف مع إشعار صوتي للمسجلين الجدد
-    onSnapshot(query(collection(db, "requests"), where("status", "==", "pending")), snap => {
-        const pList = document.getElementById("pending-list");
-        pList.innerHTML = snap.empty ? `<tr><td colspan="5">لا توجد أي أوامر دفع معلقة حالياً...</td></tr>` : "";
-        
-        if (!snap.empty && !initialSkip) {
-            alertAudio.play().catch(() => {});
+        if(count === 0) {
+            tableBody.innerHTML = `<tr><td colspan="5" style="color:var(--neon-green); padding:20px; font-weight:bold;">🎉 مبروك، لا توجد أي طلبات معلقة حالياً! المنصة مستقرة.</td></tr>`;
         }
-        initialSkip = false;
-
-        snap.forEach(d => {
-            const r = d.data();
-            const time = r.date ? new Date(r.date).toLocaleString('ar-EG') : 'غير محدد';
-            const typeText = r.type === 'deposit' ? '🟩 إيداع شحن' : '🟧 سحب رصيد';
-            const walletText = r.wallet ? `(${r.wallet})` : '';
-            const details = r.type === 'deposit' ? `رقم الراسل: <b>${r.senderNumber || '-'}</b>` : `رقم المستلم: <b>${r.targetNumber || '-'}</b>`;
-            
-            pList.innerHTML += `<tr>
-                <td><strong>${r.email}</strong><span class="date-text">📅 ${time}</span></td>
-                <td>${typeText} <br/> <small style="color:#ffcc00">${walletText}</small></td>
-                <td>${details}</td>
-                <td style="color:#00f3ff; font-weight:bold; font-size:16px;">${r.amount} ج.م</td>
-                <td>
-                    <button class="btn-approve" onclick="processOrder('${d.id}', '${r.uid}', '${r.type}', ${r.amount}, 'approve')">✅ قبول (تم)</button>
-                    <button class="btn-reject" onclick="processOrder('${d.id}', '${r.uid}', '${r.type}', ${r.amount}, 'reject')">❌ رفض وإلغاء</button>
-                </td>
-            </tr>`;
-        });
     });
 
-    // 3️⃣ جلب السجل والأرشيف الكامل للعمليات المنتهية
-    onSnapshot(query(collection(db, "requests"), where("status", "!=", "pending")), snap => {
-        const hList = document.getElementById("history-list");
-        hList.innerHTML = snap.empty ? `<tr><td colspan="4">السجل فارغ حتى الآن.</td></tr>` : "";
-        
-        snap.forEach(d => {
-            const r = d.data();
-            const time = r.date ? new Date(r.date).toLocaleString('ar-EG') : 'غير معروف';
-            const badgeClass = r.status === 'approved' ? 'status-approved' : 'status-rejected';
-            const badgeText = r.status === 'approved' ? 'تمت الموافقة ✓' : 'مرفوض ✕';
-            const typeText = r.type === 'deposit' ? 'إيداع شحن' : 'سحب أرباح';
-            const provider = r.wallet ? ` (${r.wallet})` : '';
+    // معالجة طلبات الإيداع والسحب بقبول أو رفض
+    window.processRequest = async function(reqId, type, uid, amt, decision) {
+        if(!confirm("هل أنت متأكد تماماً من اتخاذ هذا القرار الإداري؟")) return;
 
-            hList.innerHTML += `<tr>
-                <td>${r.email}<span class="date-text">📅 ${time}</span></td>
-                <td>${typeText} <small style="color:#8a99ad;">${provider}</small></td>
-                <td style="font-weight:bold;">${r.amount} ج.م</td>
-                <td><span class="status-badge ${badgeClass}">${badgeText}</span></td>
-            </tr>`;
-        });
-    });
-
-    // دالة معالجة الأوامر المالية الرسمية (قبول أو رفض)
-    window.processOrder = async function(reqId, uid, type, amt, action) {
         try {
-            if (action === 'approve') {
-                // عند قبول طلب المعاملة
-                await updateDoc(doc(db, "requests", reqId), { status: "approved" });
-                
-                // إذا كان إيداع: نقوم بزيادة رصيد حساب اللاعب بقيمة المبلغ المشحون
-                if (type === 'deposit') { 
-                    await updateDoc(doc(db, "users", uid), { balance: increment(amt) }); 
+            await updateDoc(doc(db, "requests", reqId), { status: decision });
+            
+            if(decision === 'approved') {
+                if(type === 'deposit') {
+                    await updateDoc(doc(db, "users", uid), { balance: increment(amt) });
                 }
-                alert("✅ تم إقرار وقبول العملية بنجاح وتحديث الحساب.");
+                alert("🟢 تم قبول المعاملة بنجاح، وتعديل محفظة اللاعب أوتوماتيكياً.");
             } else {
-                // عند رفض طلب المعاملة
-                await updateDoc(doc(db, "requests", reqId), { status: "rejected" });
-                
-                // إذا كان طلب سحب وتم رفضه: نقوم بإعادة المبلغ المخصوم تلقائياً لحساب اللاعب
                 if (type === 'withdraw') { 
                     await updateDoc(doc(db, "users", uid), { balance: increment(amt) }); 
                 }
@@ -237,8 +201,89 @@
                 document.getElementById("manual-amount").value = "";
             });
         } catch(e) { 
-            alert("خطأ: تعذر الوصول أو تعديل الحساب يدوياً."); 
+            alert("حدث خطأ ما: " + e.message);
         }
+    }
+
+    // ================= الميزات المضافة حديثاً بناءً على طلبك =================
+
+    // 1. وظيفة فحص وبحث حساب اللاعب لجلب الإحصائيات وحالة النت
+    window.searchPlayerAccount = async function() {
+        const email = document.getElementById("search-email").value.trim().toLowerCase();
+        if(!email) { alert("الرجاء إدخال البريد الإلكتروني للاعب أولاً لفحصه."); return; }
+
+        try {
+            const q = query(collection(db, "users"), where("email", "==", email));
+            const snap = await getDocs(q);
+            
+            if(snap.empty) {
+                alert("⚠️ لم يتم العثور على أي لاعب مسجل بهذا البريد المكتوب!");
+                document.getElementById("search-results-box").classList.add("hidden");
+                return;
+            }
+
+            snap.forEach((d) => {
+                const data = d.data();
+                currentSearchedDocId = d.id;
+                // إذا لم يكن الحقل موجود مسبقاً نعتبر الإنترنت مفعلاً بشكل افتراضي true
+                currentSearchedNetStatus = data.internetEnabled !== false; 
+
+                // عرض البيانات الأساسية في الصندوق
+                document.getElementById("res-email").innerText = data.email;
+                document.getElementById("res-balance").innerText = `${data.balance || 0} ج.م`;
+                
+                const netLabel = document.getElementById("res-net-status");
+                const netBtn = document.getElementById("btn-toggle-net");
+                
+                if(currentSearchedNetStatus) {
+                    netLabel.innerHTML = `<span style="color:var(--neon-green)">🟢 متصل (الإنترنت يعمل)</span>`;
+                    netBtn.innerText = "📴 قطع اتصال الإنترنت";
+                    netBtn.className = "btn btn-danger";
+                } else {
+                    netLabel.innerHTML = `<span style="color:var(--neon-pink)">🔴 مفصول (معطل إدارياً)</span>`;
+                    netBtn.innerText = "🌐 تشغيل اتصال الإنترنت";
+                    netBtn.className = "btn btn-success";
+                }
+
+                // تعبئة بيانات الإحصائيات بدقة (وإظهار 0 لو لسه مالعبش)
+                document.getElementById("stat-played").innerText = `${data.gamesPlayed || 0} مرة`;
+                document.getElementById("stat-wins").innerText = `${data.wins || 0} جولة`;
+                document.getElementById("stat-losses").innerText = `${data.losses || 0} جولة`;
+                document.getElementById("stat-total-won").innerText = `${(data.totalWonAmount || 0).toLocaleString()} ج.م`;
+                document.getElementById("stat-total-lost").innerText = `${(data.totalLostAmount || 0).toLocaleString()} ج.م`;
+
+                // إظهار صندوق النتائج بالكامل وإخفاء لوحة الإحصائيات حتى يطلب فتحها
+                document.getElementById("search-results-box").classList.remove("hidden");
+                document.getElementById("stats-details-panel").classList.add("hidden");
+            });
+
+        } catch(e) {
+            alert("خطأ أثناء جلب إحصائيات الحساب: " + e.message);
+        }
+    }
+
+    // 2. وظيفة تبديل تشغيل وفصل الإنترنت عن الحساب المستهدف
+    window.togglePlayerInternet = async function() {
+        if(!currentSearchedDocId) return;
+        
+        try {
+            const newStatus = !currentSearchedNetStatus;
+            await updateDoc(doc(db, "users", currentSearchedDocId), {
+                internetEnabled: newStatus
+            });
+            
+            alert(newStatus ? "🌐 تم إرسال إشارة تشغيل الإنترنت بنجاح للحساب!" : "📴 تم قطع إشارة الإنترنت عن اللاعب فورياً!");
+            // إعادة الفحص تلقائياً لتحديث الواجهة بناء على التغيير الجديد
+            searchPlayerAccount();
+        } catch(e) {
+            alert("فشل تعديل حالة إنترنت الحساب: " + e.message);
+        }
+    }
+
+    // 3. وظيفة إظهار / إخفاء لوحة الإحصائيات عند النقر على الزر (اظهر احصائيات)
+    window.toggleStatsVisibility = function() {
+        const panel = document.getElementById("stats-details-panel");
+        panel.classList.toggle("hidden");
     }
 </script>
 </body>

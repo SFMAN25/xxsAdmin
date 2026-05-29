@@ -3,53 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>XXSB ADMIN PANEL</title>
+    <title>XXSB | CONTROL PANEL 10/10</title>
     <style>
-        body { background: #0b0c10; color: #fff; font-family: monospace; padding: 20px; }
-        .section { background: #1f2833; border: 1px solid #00f3ff; border-radius: 10px; padding: 20px; margin-bottom: 25px; }
-        h3 { color: #00f3ff; margin-top: 0; border-bottom: 1px solid rgba(0,243,255,0.2); padding-bottom: 10px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; background: rgba(0,0,0,0.5); }
-        th, td { padding: 12px; border: 1px solid rgba(0,243,255,0.2); text-align: center; }
-        th { background: rgba(0,243,255,0.1); color: #00f3ff; }
-        button { padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin: 2px; }
-        .btn-ok { background: #00ff66; color: #000; }
-        .btn-no { background: #ff0055; color: #fff; }
-        input { padding: 10px; background: #000; color: #fff; border: 1px solid #00f3ff; border-radius: 5px; }
-        .date-badge { font-size: 11px; background: rgba(255,255,255,0.1); padding: 3px 6px; border-radius: 4px; display: block; margin-top: 5px; }
+        body { background: #070a14; color: #fff; font-family: 'Segoe UI', sans-serif; padding: 30px; }
+        h1 { text-align: center; color: #00f3ff; text-shadow: 0 0 15px rgba(0,243,255,0.4); margin-bottom: 40px; }
+        .grid-layout { display: grid; grid-template-columns: 1fr; gap: 30px; }
+        .card { background: #111625; border: 1px solid rgba(0, 243, 255, 0.15); border-radius: 15px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        h3 { color: #00f3ff; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px; margin-top: 0; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { padding: 12px 15px; border-bottom: 1px solid rgba(255,255,255,0.05); text-align: center; }
+        th { background: rgba(0, 243, 255, 0.05); color: #00f3ff; font-weight: bold; }
+        tr:hover { background: rgba(255,255,255,0.02); }
+        button { padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; margin: 2px; }
+        .btn-approve { background: #00ff66; color: #000; }
+        .btn-reject { background: #ff0055; color: #fff; }
+        .btn-action { background: #00f3ff; color: #000; width: 100%; padding: 12px; margin-top: 10px; border-radius: 8px; }
+        input { width: 100%; padding: 12px; background: #090d16; color: #fff; border: 1px solid rgba(0,243,255,0.2); border-radius: 8px; margin-bottom: 10px; text-align: center; }
+        .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; }
+        .status-approved { background: rgba(0,255,102,0.15); color: #00ff66; }
+        .status-rejected { background: rgba(255,0,85,0.15); color: #ff0055; }
+        .date-text { font-size: 11px; color: #6c7a89; display: block; }
     </style>
 </head>
 <body>
 
-    <h1 style="text-align:center; color:#00f3ff;">🖥️ لوحة الإدارة (Live)</h1>
+    <h1>🖥️ لوحة الإدارة والتحكم الشاملة لايف</h1>
 
-    <div class="section">
-        <h3>⚡ الطلبات المعلقة</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>اللاعب / الوقت</th>
-                    <th>النوع / المحفظة</th>
-                    <th>التفاصيل (رقم الكاش)</th>
-                    <th>المبلغ</th>
-                    <th>القرار</th>
-                </tr>
-            </thead>
-            <tbody id="req-list">
-                <tr><td colspan="5">لا توجد طلبات معلقة...</td></tr>
-            </tbody>
-        </table>
-    </div>
+    <div class="grid-layout">
+        
+        <div class="card">
+            <h3>👥 اسمي الحسابات المتسجلة في المنصة ورصيدهم</h3>
+            <div style="max-height: 300px; overflow-y: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>البريد الإلكتروني للإيداع واللعب</th>
+                            <th>الرصيد الحالي</th>
+                        </tr>
+                    </thead>
+                    <tbody id="users-list">
+                        <tr><td colspan="2">جاري جلب الحسابات المسجلة...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
-    <div class="section">
-        <h3 style="color:#39ff14;">💰 إضافة/خصم رصيد يدوي لأي لاعب</h3>
-        <input type="email" id="direct-email" placeholder="إيميل اللاعب">
-        <input type="number" id="direct-amt" placeholder="المبلغ (+ إضافة، - خصم)">
-        <button class="btn-ok" onclick="manualDeposit()">تأكيد العملية</button>
+        <div class="card">
+            <h3>⚡ أوامر الدفع المعلقة (بانتظار التأكيد)</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>اللاعب / وقت الطلب</th>
+                        <th>النوع / الوسيلة</th>
+                        <th>بيانات ورقم التحويل</th>
+                        <th>المبلغ المطلوب</th>
+                        <th>اتخاذ قرار رسمي</th>
+                    </tr>
+                </thead>
+                <tbody id="pending-list">
+                    <tr><td colspan="5">لا توجد أي أوامر دفع معلقة حالياً...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card">
+            <h3>📜 سجل وأرشيف العمليات السابقة</h3>
+            <div style="max-height: 300px; overflow-y: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>اللاعب / التاريخ</th>
+                            <th>النوع</th>
+                            <th>المبلغ</th>
+                            <th>حالة الطلب</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-list">
+                        <tr><td colspan="4">السجل فارغ...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3 style="color:#00ff66;">💰 التحكم المالي السريع (إرسال/خصم فلوس)</h3>
+            <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 10px;">
+                <input type="email" id="manual-email" placeholder="اكتب إيميل اللاعب بدقة">
+                <input type="number" id="manual-amount" placeholder="المبلغ (مثال: 500 أو -500 للخصم)">
+                <button class="btn-approve" style="margin: 0; height: 44px;" onclick="executeManualTransaction()">تنفيذ الأمر المالي فوراً</button>
+            </div>
+        </div>
+
     </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, collection, onSnapshot, query, where, doc, updateDoc, increment, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, collection, onSnapshot, query, where, doc, updateDoc, increment, getDocs, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyCyiLPBJ0qDVZhAtW5r0psuvz8iyIy8VLI",
@@ -63,62 +112,104 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    onSnapshot(query(collection(db, "requests"), where("status", "==", "pending")), snap => {
-        const tbody = document.getElementById("req-list");
-        tbody.innerHTML = snap.empty ? `<tr><td colspan="5">لا توجد طلبات معلقة...</td></tr>` : "";
+    // 1️⃣ جلب وتحديث قائمة الحسابات المتسجلة تلقائياً
+    onSnapshot(collection(db, "users"), snap => {
+        const uList = document.getElementById("users-list");
+        uList.innerHTML = "";
+        if(snap.empty) { uList.innerHTML = "<tr><td colspan='2'>لا يوجد مستخدمين مسجلين بعد.</td></tr>"; return; }
         
         snap.forEach(d => {
-            const req = d.data();
-            const dateObj = req.date ? new Date(req.date).toLocaleString('ar-EG') : 'وقت غير معروف';
-            const typeStr = req.type === 'deposit' ? '🟩 إيداع' : '🟧 سحب';
-            const walletStr = req.wallet ? `(${req.wallet})` : '';
-            const details = req.type === 'deposit' ? `تحويل من: ${req.senderNumber}` : `تحويل إلى: ${req.targetNumber}`;
+            const u = d.data();
+            uList.innerHTML += `<tr>
+                <td style="text-align:right; font-weight:bold; color:#fff;">✉️ ${u.email}</td>
+                <td style="color:#00ff66; font-weight:bold;">${u.balance || 0} ج.م</td>
+            </tr>`;
+        });
+    });
+
+    // 2️⃣ جلب وتحديث أوامر الدفع المعلقة لايف
+    onSnapshot(query(collection(db, "requests"), where("status", "==", "pending")), snap => {
+        const pList = document.getElementById("pending-list");
+        pList.innerHTML = snap.empty ? `<tr><td colspan="5">لا توجد أي أوامر دفع معلقة حالياً...</td></tr>` : "";
+        
+        snap.forEach(d => {
+            const r = d.data();
+            const time = r.date ? new Date(r.date).toLocaleString('ar-EG') : 'غير محدد';
+            const typeText = r.type === 'deposit' ? '🟩 إيداع شحن' : '🟧 سحب رصيد';
+            const walletText = r.wallet ? `(${r.wallet})` : '';
+            const details = r.type === 'deposit' ? `رقم الراسل: ${r.senderNumber}` : `رقم المستلم: ${r.targetNumber}`;
             
-            tbody.innerHTML += `<tr>
-                <td>${req.email}<span class="date-badge">${dateObj}</span></td>
-                <td>${typeStr}<br><span style="font-size:12px; color:#aaa;">${walletStr}</span></td>
+            pList.innerHTML += `<tr>
+                <td><strong>${r.email}</strong><span class="date-text">${time}</span></td>
+                <td>${typeText} <br/> <small>${walletText}</small></td>
                 <td>${details}</td>
-                <td style="font-weight:bold; color:#00f3ff;">${req.amount} ج.م</td>
+                <td style="color:#00f3ff; font-weight:bold; font-size:16px;">${r.amount} ج.م</td>
                 <td>
-                    <button class="btn-ok" onclick="handleReq('${d.id}', '${req.uid}', '${req.type}', ${req.amount}, 'approve')">✅ تأكيد</button>
-                    <button class="btn-no" onclick="handleReq('${d.id}', '${req.uid}', '${req.type}', ${req.amount}, 'reject')">❌ رجوع/رفض</button>
+                    <button class="btn-approve" onclick="processOrder('${d.id}', '${r.uid}', '${r.type}', ${r.amount}, 'approve')">✅ قبول (تم)</button>
+                    <button class="btn-reject" onclick="processOrder('${d.id}', '${r.uid}', '${r.type}', ${r.amount}, 'reject')">❌ رفض / إرجاع</button>
                 </td>
             </tr>`;
         });
     });
 
-    window.handleReq = async function(reqId, uid, type, amt, action) {
+    // 3️⃣ جلب السجل الكامل للعمليات السابقة (تم قبولها أو رفضها) لفرزها
+    onSnapshot(query(collection(db, "requests"), where("status", "!=", "pending")), snap => {
+        const hList = document.getElementById("history-list");
+        hList.innerHTML = snap.empty ? `<tr><td colspan="4">السجل فارغ حتى الآن.</td></tr>` : "";
+        
+        snap.forEach(d => {
+            const r = d.data();
+            const time = r.date ? new Date(r.date).toLocaleString('ar-EG') : 'غير معروف';
+            const badgeClass = r.status === 'approved' ? 'status-approved' : 'status-rejected';
+            const badgeText = r.status === 'approved' ? 'تمت الموافقة' : 'مرفوض';
+            const typeText = r.type === 'deposit' ? 'إيداع' : 'سحب';
+
+            hList.innerHTML += `<tr>
+                <td>${r.email}<span class="date-text">${time}</span></td>
+                <td>${typeText}</td>
+                <td>${r.amount} ج.م</td>
+                <td><span class="status-badge ${badgeClass}">${badgeText}</span></td>
+            </tr>`;
+        });
+    });
+
+    // معالجة الأوامر بالقبول أو الرفض وتحديث حساب اللاعب فوراً
+    window.processOrder = async function(reqId, uid, type, amt, action) {
         try {
             if(action === 'approve') {
                 await updateDoc(doc(db, "requests", reqId), { status: "approved" });
-                if(type === 'deposit') { await updateDoc(doc(db, "users", uid), { balance: increment(amt) }); }
-                alert("تم الموافقة وتحديث الرصيد بنجاح.");
+                if(type === 'deposit') { 
+                    await updateDoc(doc(db, "users", uid), { balance: increment(amt) }); 
+                }
+                alert("✅ تم قبول العملية بنجاح وإضافة الرصيد.");
             } else {
                 await updateDoc(doc(db, "requests", reqId), { status: "rejected" });
-                if(type === 'withdraw') { await updateDoc(doc(db, "users", uid), { balance: increment(amt) }); }
-                alert("تم الرفض بنجاح (وإرجاع الفلوس لو كانت سحب).");
+                if(type === 'withdraw') { 
+                    await updateDoc(doc(db, "users", uid), { balance: increment(amt) }); 
+                }
+                alert("❌ تم رفض الطلب وإرجاع المال للمحفظة إن كان سحباً.");
             }
-        } catch(e) { alert("خطأ: " + e.message); }
+        } catch(e) { alert("خطأ في معالجة الأمر: " + e.message); }
     }
 
-    window.manualDeposit = async function() {
-        // حلينا مشكلة إن اللاعب مش بيظهر (بنوحد حالة الحروف)
-        const email = document.getElementById("direct-email").value.trim().toLowerCase();
-        const amt = parseInt(document.getElementById("direct-amt").value);
-        if(!email || !amt) { alert("أدخل الإيميل والمبلغ!"); return; }
+    // إرسال أو خصم رصيد يدوي لأي إيميل
+    window.executeManualTransaction = async function() {
+        const email = document.getElementById("manual-email").value.trim().toLowerCase();
+        const amt = parseInt(document.getElementById("manual-amount").value);
+        if(!email || !amt) { alert("من فضلك أدخل الإيميل والمبلغ بالكامل."); return; }
 
         try {
             const q = query(collection(db, "users"), where("email", "==", email));
             const snap = await getDocs(q);
-            if(snap.empty) { alert("اللاعب غير موجود! تأكد إن الإيميل صح."); return; }
+            if(snap.empty) { alert("⚠️ هذا الحساب غير مسجل في الداتابيز بالمنصة!"); return; }
             
             snap.forEach(async (d) => {
                 await updateDoc(doc(db, "users", d.id), { balance: increment(amt) });
-                alert(`تم تعديل الرصيد بنجاح للاعب: ${email}`);
-                document.getElementById("direct-email").value = "";
-                document.getElementById("direct-amt").value = "";
+                alert(`💰 تم تعديل الحساب يدويًا بنجاح بمقدار ${amt} ج.م للحساب: ${email}`);
+                document.getElementById("manual-email").value = "";
+                document.getElementById("manual-amount").value = "";
             });
-        } catch(e) { alert("خطأ: تأكد من إن قواعد الداتابيز Rule مفتوحة"); }
+        } catch(e) { alert("خطأ: تعذر تحديث الرصيد يدوياً."); }
     }
 </script>
 </body>

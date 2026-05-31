@@ -25,7 +25,6 @@
         .date-text { font-size: 11px; color: #6c7a89; display: block; }
         .badge-info { background: rgba(255, 204, 0, 0.1); color: #ffcc00; padding: 2px 6px; border-radius: 4px; font-size: 11px; }
         
-        /* ستايلات الإضافة الجديدة: فحص الحساب */
         .info-box { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.03); margin-top: 15px; }
         .info-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.02); font-size: 13px; }
         .info-row:last-child { border-bottom: none; }
@@ -108,7 +107,7 @@
         </div>
 
         <div class="card" style="border-color: #00ff66;">
-            <h3 style="color:#00ff66;">🛠️ فحص الحساب الذكي والتحكم بالإنترنت</h3>
+            <h3 style="color:#00ff66;">🛠️ فحص الحساب الذكي والتحكم الأمني والإنترنت</h3>
             <input type="email" id="search-email" placeholder="أدخل بريد اللاعب المراد فحصه">
             <button class="btn-search" onclick="searchPlayerAccount()">🔍 فحص الحساب الآن</button>
             
@@ -116,10 +115,19 @@
                 <div class="info-row"><span>📧 البريد الإلكتروني:</span><b id="res-email" style="color:#00f3ff">-</b></div>
                 <div class="info-row"><span>💵 الرصيد الحالي:</span><b id="res-balance" style="color:#00ff66">0 ج.م</b></div>
                 <div class="info-row"><span>🌐 حالة إنترنت الحساب:</span><b id="res-net-status">-</b></div>
+                <!-- إضافة حالة الحظر والقفل -->
+                <div class="info-row"><span>🚫 حالة الحظر:</span><b id="res-ban-status">-</b></div>
+                <div class="info-row"><span>🔒 قفل الأمان:</span><b id="res-lock-status">-</b></div>
                 
                 <div style="margin-top: 15px; display: flex; gap: 10px;">
                     <button id="btn-toggle-net" class="btn-reject" style="flex:1; padding:10px;" onclick="togglePlayerInternet()">📴 فصل الإنترنت</button>
-                    <button class="btn-action" style="flex:1; margin-top:0; padding:10px; background:rgba(255,255,255,0.1); color:#fff;" onclick="toggleStatsVisibility()">📊 اظهر احصائيات</button>
+                    <!-- إضافة أزرار التحكم في الحظر والقفل الأمني -->
+                    <button id="btn-toggle-ban" class="btn-reject" style="flex:1; padding:10px;" onclick="togglePlayerBan()">🚫 حظر نهائي</button>
+                    <button id="btn-toggle-lock" class="btn-action" style="flex:1; margin-top:0; padding:10px; background:#ffcc00; color:#000;" onclick="toggleSecurityLock()">🔒 قفل الأمان</button>
+                </div>
+                
+                <div style="margin-top: 10px; display: flex; gap: 10px;">
+                    <button class="btn-action" style="flex:1; margin-top:0; padding:10px; background:rgba(255,255,255,0.1); color:#fff;" onclick="toggleStatsVisibility()">📊 اظهر احصائيات XO</button>
                 </div>
 
                 <div id="stats-details-panel" class="stats-panel hidden">
@@ -132,7 +140,7 @@
                 </div>
             </div>
         </div>
-        </div>
+    </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -150,13 +158,14 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // تفعيل صوت إشعار فوري عند وصول أي طلب مالي معلق جديد للوحة
     let initialSkip = true;
     const alertAudio = new Audio('https://actions.google.com/sounds/v1/notifications/beep_short.ogg');
 
-    // متغيرات عالمية للإضافة الجديدة (فحص الحساب)
+    // متغيرات عالمية للإضافة الجديدة (فحص الحساب والحماية)
     let currentSearchedDocId = null;
     let currentSearchedNetStatus = true;
+    let currentSearchedBanStatus = false;
+    let currentSearchedLockStatus = false;
 
     // 1️⃣ جلب وتحديث قائمة اللاعبين متضمنة بيانات الاتصال والأجهزة لايف
     onSnapshot(collection(db, "users"), snap => {
@@ -177,7 +186,7 @@
         });
     });
 
-    // 2️⃣ جلب وتحديث أوامر السحب والإيداع المعلقة لايف مع إشعار صوتي للمسجلين الجدد
+    // 2️⃣ جلب وتحديث أوامر السحب والإيداع المعلقة لايف
     onSnapshot(query(collection(db, "requests"), where("status", "==", "pending")), snap => {
         const pList = document.getElementById("pending-list");
         pList.innerHTML = snap.empty ? `<tr><td colspan="5">لا توجد أي أوامر دفع معلقة حالياً...</td></tr>` : "";
@@ -207,7 +216,7 @@
         });
     });
 
-    // 3️⃣ جلب السجل والأرشيف الكامل للعمليات المنتهية
+    // 3️⃣ جلب السجل والأرشيف الكامل
     onSnapshot(query(collection(db, "requests"), where("status", "!=", "pending")), snap => {
         const hList = document.getElementById("history-list");
         hList.innerHTML = snap.empty ? `<tr><td colspan="4">السجل فارغ حتى الآن.</td></tr>` : "";
@@ -229,7 +238,6 @@
         });
     });
 
-    // دالة معالجة الأوامر المالية الرسمية (قبول أو رفض)
     window.processOrder = async function(reqId, uid, type, amt, action) {
         try {
             if (action === 'approve') {
@@ -250,7 +258,6 @@
         }
     }
 
-    // تنفيذ أمر تعديل رصيد يدوي لأي إيميل مسجل مباشرة
     window.executeManualTransaction = async function() {
         const email = document.getElementById("manual-email").value.trim().toLowerCase();
         const amt = parseInt(document.getElementById("manual-amount").value);
@@ -272,7 +279,7 @@
         }
     }
 
-    // ================= دوال الإضافة الجديدة للبحث والتحكم =================
+    // ================= دوال البحث والتحكم الشامل =================
     window.searchPlayerAccount = async function() {
         const email = document.getElementById("search-email").value.trim().toLowerCase();
         if(!email) { alert("الرجاء إدخال البريد الإلكتروني للاعب."); return; }
@@ -291,13 +298,15 @@
                 const data = d.data();
                 currentSearchedDocId = d.id;
                 currentSearchedNetStatus = data.internetEnabled !== false; 
+                currentSearchedBanStatus = data.isBanned === true;
+                currentSearchedLockStatus = data.isSecurityLocked === true;
 
                 document.getElementById("res-email").innerText = data.email;
                 document.getElementById("res-balance").innerText = `${data.balance || 0} ج.م`;
                 
+                // تحديث حالة الإنترنت
                 const netLabel = document.getElementById("res-net-status");
                 const netBtn = document.getElementById("btn-toggle-net");
-                
                 if(currentSearchedNetStatus) {
                     netLabel.innerHTML = `<span style="color:#00ff66">🟢 متصل</span>`;
                     netBtn.innerText = "📴 فصل الإنترنت";
@@ -308,7 +317,35 @@
                     netBtn.className = "btn-approve";
                 }
 
-                // تعبئة الإحصائيات (أصفار إذا لم يلعب بعد)
+                // تحديث حالة الحظر
+                const banLabel = document.getElementById("res-ban-status");
+                const banBtn = document.getElementById("btn-toggle-ban");
+                if(currentSearchedBanStatus) {
+                    banLabel.innerHTML = `<span style="color:#ff0055; font-weight:bold;">محظور نهائياً 🚫</span>`;
+                    banBtn.innerText = "✅ رفع الحظر";
+                    banBtn.className = "btn-approve";
+                } else {
+                    banLabel.innerHTML = `<span style="color:#00ff66">نشط 🟢</span>`;
+                    banBtn.innerText = "🚫 حظر نهائي";
+                    banBtn.className = "btn-reject";
+                }
+
+                // تحديث حالة قفل الأمان
+                const lockLabel = document.getElementById("res-lock-status");
+                const lockBtn = document.getElementById("btn-toggle-lock");
+                if(currentSearchedLockStatus) {
+                    lockLabel.innerHTML = `<span style="color:#ffcc00; font-weight:bold;">مقفل أمنياً 🔒</span>`;
+                    lockBtn.innerText = "🔓 فك قفل الأمان";
+                    lockBtn.style.background = "#00f3ff";
+                    lockBtn.style.color = "#000";
+                } else {
+                    lockLabel.innerHTML = `<span style="color:#00ff66">سليم 🟢</span>`;
+                    lockBtn.innerText = "🔒 تفعيل قفل الأمان";
+                    lockBtn.style.background = "#ffcc00";
+                    lockBtn.style.color = "#000";
+                }
+
+                // تعبئة إحصائيات XO
                 document.getElementById("stat-played").innerText = `${data.gamesPlayed || 0} مرة`;
                 document.getElementById("stat-wins").innerText = `${data.wins || 0} جولة`;
                 document.getElementById("stat-losses").innerText = `${data.losses || 0} جولة`;
@@ -322,14 +359,41 @@
         } catch(e) { alert("خطأ: " + e.message); }
     }
 
+    // دوال أزرار التحكم
     window.togglePlayerInternet = async function() {
         if(!currentSearchedDocId) return;
         try {
             const newStatus = !currentSearchedNetStatus;
             await updateDoc(doc(db, "users", currentSearchedDocId), { internetEnabled: newStatus });
             alert(newStatus ? "🌐 تم تشغيل الإنترنت للحساب بنجاح!" : "📴 تم قطع الإنترنت عن اللاعب!");
-            searchPlayerAccount(); // إعادة فحص لتحديث الواجهة
+            searchPlayerAccount(); 
         } catch(e) { alert("فشل تعديل حالة الإنترنت."); }
+    }
+
+    window.togglePlayerBan = async function() {
+        if(!currentSearchedDocId) return;
+        const msg = currentSearchedBanStatus ? "هل أنت متأكد من رفع الحظر عن هذا اللاعب والسماح له بالدخول مجدداً؟" : "هل أنت متأكد من حظر هذا اللاعب نهائياً؟ (لن يتمكن من تسجيل الدخول)";
+        if(confirm(msg)) {
+            try {
+                const newStatus = !currentSearchedBanStatus;
+                await updateDoc(doc(db, "users", currentSearchedDocId), { isBanned: newStatus });
+                alert(newStatus ? "🚫 تم حظر الحساب نهائياً!" : "✅ تم رفع الحظر عن الحساب بنجاح!");
+                searchPlayerAccount(); 
+            } catch(e) { alert("فشل تعديل حالة الحظر."); }
+        }
+    }
+
+    window.toggleSecurityLock = async function() {
+        if(!currentSearchedDocId) return;
+        const msg = currentSearchedLockStatus ? "هل أنت متأكد من فك قفل الأمان عن هذا اللاعب؟" : "هل أنت متأكد من تفعيل قفل الأمان (سيتم تجميد الحساب لحين فحص نشاطه)؟";
+        if(confirm(msg)) {
+            try {
+                const newStatus = !currentSearchedLockStatus;
+                await updateDoc(doc(db, "users", currentSearchedDocId), { isSecurityLocked: newStatus });
+                alert(newStatus ? "🔒 تم تفعيل قفل الأمان للحساب!" : "🔓 تم فك قفل الأمان عن الحساب بنجاح!");
+                searchPlayerAccount(); 
+            } catch(e) { alert("فشل تعديل حالة قفل الأمان."); }
+        }
     }
 
     window.toggleStatsVisibility = function() {
